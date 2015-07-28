@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-lazy-init="true">
+	<bean id="productIndexBuildService" class="com.cartmatic.estoresearch.solr.index.impl.ProductIndexBuidServiceImpl" 
+	      autowire="byName" lazy-init="false" init-method="init">
+	</bean>
+	<bean id="salesOrderIndexBuildService" class="com.cartmatic.estoresearch.solr.index.impl.SalesOrderIndexBuildServiceImpl" 
+	      autowire="byName" lazy-init="false" init-method="init">
+	</bean>
+	<bean id="contentIndexBuildService" class="com.cartmatic.estoresearch.solr.index.impl.ContentIndexBuildServiceImpl" 
+	      autowire="byName" lazy-init="false" init-method="init">
+	</bean>
+	<bean id="abcIndexBuildService" class="com.cartmatic.estoresearch.solr.index.impl.AbcIndexBuildServiceImpl" 
+	      autowire="byName" lazy-init="false" init-method="init">
+	</bean>
+</beans>

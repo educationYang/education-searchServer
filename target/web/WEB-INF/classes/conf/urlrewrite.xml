@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.0//EN"
+    "http://tuckey.org/res/dtds/urlrewrite3.0.dtd">
+
+<!-- https://urlrewrite.dev.java.net/manual/3.0 -->
+<urlrewrite>
+    <!-- 带_dy结尾的页面不进行静态化 -->
+    <rule match-type="regex">
+		<from>^/(.*)_dy.html$</from>
+		<to type="forward">/$1.html</to>		
+	</rule>
+    <!-- 静态化而优化的分页url -->
+    <rule match-type="regex">
+        <from>^/(.*)=PrmPageNo([0-9]+).html$</from>
+        <to type="forward">/$1.html?PrmPageNo=$2</to>
+    </rule>
+	<!-- 对动态JS启用客户端缓存 -->
+    <rule match-type="regex">
+        <from>^/scripts/jsp/(.*).js</from>
+        <set type="response-header" name="Cache-Control">max-age=3600, must-revalidate</set>
+        <to type="forward">/share/scripts/jsp/$1.jsp</to>
+    </rule>
+	<!-- 对DWR动态JS启用客户端缓存 -->
+	<rule match-type="wildcard">
+		<from>/dwr/**</from>
+		<set type="response-header" name="Cache-Control">max-age=3600, must-revalidate</set>
+	</rule>
+	<!-- 禁止直接访问JSP模版 -->
+	<rule match-type="regex">
+        <from>^.*/pages/(.*).jsp</from>
+        <set name="javax.servlet.error.request_uri">/pages/$1.jsp</set>
+        <to type="forward">/404.jsp</to>
+    </rule>
+</urlrewrite>
+

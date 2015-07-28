@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>searchServer</display-name>
+	
+	<!-- <env-entry>
+  		<env-entry-name>solr/home</env-entry-name>
+  		<env-entry-value>D:/eclipse/workspace/searchServer/web/WEB-INF/solrHome</env-entry-value>	
+  		<env-entry-type>java.lang.String</env-entry-type>
+	</env-entry> -->
+	
+	<!-- precompiled jsp mappings -->
+	<context-param>
+		<param-name>isSearchServer</param-name>
+		<param-value>yes</param-value>
+	</context-param>
+	<!-- Context Configuration locations for Spring XML files -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/classes/conf/spring-store-search.xml</param-value>
+	</context-param>
+		
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>compressionFilter</filter-name>
+		<filter-class>com.cartmatic.estore.core.filter.GZIPFilter</filter-class>
+	</filter>
+	<filter>
+    	<filter-name>SolrRequestFilter</filter-name>
+    	 <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class> 
+    	<!--<filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class>-->
+    	
+  	</filter>
+
+  <filter-mapping>
+    <!--
+      NOTE: When using multicore, /admin JSP URLs with a core specified
+      such as /solr/coreName/admin/stats.jsp get forwarded by a
+      RequestDispatcher to /solr/admin/stats.jsp with the specified core
+      put into request scope keyed as "org.apache.solr.SolrCore".
+
+      It is unnecessary, and potentially problematic, to have the SolrDispatchFilter
+      configured to also filter on forwards.  Do not configure
+      this dispatcher as <dispatcher>FORWARD</dispatcher>.
+    -->
+    <filter-name>SolrRequestFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  	</filter-mapping>
+  	<filter-mapping>
+		<filter-name>compressionFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Listeners -->
+	<listener>
+		<listener-class>com.cartmatic.estore.core.listener.StartupListener</listener-class>
+	</listener>
+	<!-- Servlets -->
+	<servlet>
+    	<servlet-name>SolrServer</servlet-name>
+    	<servlet-class>org.apache.solr.servlet.SolrServlet</servlet-class>
+    	<load-on-startup>1</load-on-startup>
+  	</servlet>
+
+  	<servlet>
+    	<servlet-name>SolrUpdate</servlet-name>
+    	<servlet-class>org.apache.solr.servlet.SolrUpdateServlet</servlet-class>
+    	<load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet>
+		<servlet-name>Logging</servlet-name>
+		<servlet-class>org.apache.solr.servlet.LogLevelSelection</servlet-class>
+	</servlet>  
+	<servlet-mapping>
+    	<servlet-name>SolrServer</servlet-name>
+    	<url-pattern>/select/*</url-pattern>
+  	</servlet-mapping>
+  	<servlet-mapping>
+    	<servlet-name>SolrUpdate</servlet-name>
+    	<url-pattern>/update/*</url-pattern>
+  	</servlet-mapping>
+  	<servlet-mapping>
+		<servlet-name>Logging</servlet-name>
+		<url-pattern>/admin/logging</url-pattern>
+	</servlet-mapping>
+	
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>500</error-code>
+		<location>/error.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/index.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.jsp</location>
+	</error-page>
+
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<page-encoding>UTF-8</page-encoding>
+		</jsp-property-group>
+	</jsp-config>
+	
+	<mime-mapping>
+		<extension>rar</extension>
+		<mime-type>application/rar</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>csv</extension>
+		<mime-type>application/ms-excel</mime-type>
+		<!-- <mime-type>application/vnd.ms-excel</mime-type> -->
+	</mime-mapping>
+</web-app>

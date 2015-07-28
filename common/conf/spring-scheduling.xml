@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<!--
+	- Scheduler context for Quartz.
+	- Note that Quartz Jobs are throwaway objects, in contrast to shared TimerTasks.
+-->
+<beans default-lazy-init="true">
+
+	<!-- Quartz Scheduler, with pre-registered triggers -->
+	<!-- Will automatically start scheduling on context startup -->
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false">
+		<property name="triggers">
+			<list>
+			   <!-- <ref local="advertisementCacheTrigger"/> -->
+			   <ref local="applicationEventHandlerJobTrigger"/>
+			</list>
+		</property>
+		<!-- Don't automatically start (no good error control when startup), context util will start it instead. -->
+		<property name="autoStartup" value="false" />
+	</bean>
+
+	<!-- start update advertisement cache -->
+	<!--huangwenmin  
+	<bean id="advertisementCacheJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="advertisementManager" />
+		<property name="targetMethod" value="saveClicksForFront" />
+	</bean>
+	 
+	
+	<bean id="advertisementCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="description" value="广告cache触发器" />
+		<property name="jobDetail" ref="advertisementCacheJobDetail" />
+		<property name="startDelay" value="10000" />
+		<property name="repeatInterval" value="180000" />
+	</bean>-->
+	<!-- end advertisement cache -->
+	<!-- begin: handle application events -->
+	<bean id="applicationEventHandlerJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="appEventManager" />
+		<property name="targetMethod" value="processApplicationEvents" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="applicationEventHandlerJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="description" value="更新应用事件触发器，建议周期为30秒" />
+		<property name="jobDetail" ref="applicationEventHandlerJobDetail" />
+		<property name="startDelay" value="60000" />
+		<property name="repeatInterval" value="30000" />
+	</bean>
+	<!-- end: handle application events -->
+
+</beans>
